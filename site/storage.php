@@ -120,4 +120,52 @@ class Storage implements IStorage {
       return !$condition($item);
     });
   }
+
+  public function findCarsByFilter(array $filters) {
+    return $this->findMany(function ($car) use ($filters) {
+        // Transmission filter
+        if (isset($filters['transmission']) && $filters['transmission'] !== '') {
+            if ($car['transmission'] !== $filters['transmission']) {
+                return false;
+            }
+        }
+
+        // Passengers filter
+        if (isset($filters['passengers']) && $filters['passengers'] !== '') {
+            if ((int)$car['passengers'] < (int)$filters['passengers']) {
+                return false;
+            }
+        }
+
+        // Price range filter
+        if (isset($filters['price_min']) && $filters['price_min'] !== '') {
+            if ((float)$car['daily_price_huf'] < (float)$filters['price_min']) {
+                return false;
+            }
+        }
+        if (isset($filters['price_max']) && $filters['price_max'] !== '') {
+            if ((float)$car['daily_price_huf'] > (float)$filters['price_max']) {
+                return false;
+            }
+        }
+
+        // Availability filter
+        if (isset($filters['start_date']) && isset($filters['end_date']) &&
+            $filters['start_date'] !== '' && $filters['end_date'] !== '') {
+            $start_date = strtotime($filters['start_date']);
+            $end_date = strtotime($filters['end_date']);
+            if (isset($car['booked_dates'])) {
+                foreach ($car['booked_dates'] as $range) {
+                    $range_start = strtotime($range['start_date']);
+                    $range_end = strtotime($range['end_date']);
+                    if ($start_date <= $range_end && $end_date >= $range_start) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true; // Car matches all filters
+    });
+  }
 }
