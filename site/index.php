@@ -1,13 +1,12 @@
 <?php
 // index.php
-
+session_start();
 // Include configuration and storage
 require_once 'config.php';
 require_once 'storage.php';
 
 // Initialize the storage
-$carStorage = new Storage($db); // Assuming $db is the database connection from config.php
-
+$carStorage = new Storage(new JsonIO('./db/cars.json'), true); 
 // Fetch filters from GET parameters
 $filters = [
     'transmission' => $_GET['transmission'] ?? null,
@@ -34,8 +33,13 @@ $cars = $carStorage->findCarsByFilter($filters); // Define this method in storag
 <body>
     <header>
         <h1>Welcome to the Car Rental Service</h1>
-        <a href="auth.php?action=login">Login</a>
-        <a href="auth.php?action=register">Register</a>
+        <?php if (isset($_SESSION['user'])): ?>
+            <a href="profile.php">Profile</a>
+            <a href="auth.php?action=logout">Logout</a>
+        <?php else: ?>
+            <a href="auth.php?action=login">Login</a>
+            <a href="auth.php?action=register">Register</a>
+        <?php endif; ?>
     </header>
 
     <main>

@@ -1,7 +1,7 @@
 <?php 
 interface IFileIO {
   function save($data);
-  function load();
+  function load($assoc = true); // Optional parameter added
 }
 abstract class FileIO implements IFileIO {
   protected $filepath;
@@ -11,6 +11,11 @@ abstract class FileIO implements IFileIO {
       throw new Exception("Data source $filename is invalid.");
     }
     $this->filepath = realpath($filename);
+  }
+
+  public function load($assoc = true) {
+    // Placeholder implementation
+    return [];
   }
 }
 class JsonIO extends FileIO {
@@ -25,7 +30,7 @@ class JsonIO extends FileIO {
   }
 }
 class SerializeIO extends FileIO {
-  public function load() {
+  public function load($assoc = true) {
     $file_content = file_get_contents($this->filepath);
     return unserialize($file_content) ?: [];
   }
