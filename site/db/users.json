@@ -1,7 +1,16 @@
 {
-    "678111966c771": {
-        "username": "shinki",
-        "password": "$2y$10$Y4uV59xH7UGq08ftEZrStOZkvC2r5muO8No29rW6IQPdQ2agEpipe",
-        "id": "678111966c771"
+    "0": {
+        "name": "admin",
+        "email": "admin@ikarrental.hu",
+        "password": "$2y$10$fspJRAmuhmnVXvrGifYhyusJ01vOvJWeEHnl0exrVMSDL4UB3i6eG",
+        "authority": "admin",
+        "id": "0"
+    },
+    "67863f05dbe09": {
+        "name": "Amirkhusrav Parviz",
+        "email": "amirkhusrav.p491@gmail.com",
+        "password": "$2y$10$njAixIJ5wTmBegILkDPSD.xGbIc37mS8RByAD\/TMJNlmspPIxG\/Zm",
+        "authority": "user",
+        "id": "67863f05dbe09"
     }
 }

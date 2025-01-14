@@ -68,13 +68,15 @@ class Storage implements IStorage {
   }
 
   public function add($record): string {
-    $id = uniqid();
-    if (is_array($record)) {
-      $record['id'] = $id;
-    }
-    else if (is_object($record)) {
-      $record->id = $id;
-    }
+    // $id = uniqid();
+    // if (is_array($record)) {
+    //   $record['id'] = $id;
+    // }
+    // else if (is_object($record)) {
+    //   $record->id = $id;
+    // }
+    $id = $record['id'];
+    $record['id'] = $id + 1;
     $this->contents[$id] = $record;
     return $id;
   }
@@ -131,6 +133,12 @@ class Storage implements IStorage {
         // Transmission filter
         if (isset($filters['transmission']) && $filters['transmission'] !== '') {
             if ($car['transmission'] !== $filters['transmission']) {
+                return false;
+            }
+        }
+
+        if (isset($filters['fuel_type']) && $filters['fuel_type'] !== '') {
+            if ($car['fuel_type'] !== $filters['fuel_type']) {
                 return false;
             }
         }

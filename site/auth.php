@@ -1,6 +1,6 @@
 <?php
 // auth.php
-
+session_start();
 require_once 'config.php';
 require_once 'storage.php';
 
@@ -11,14 +11,20 @@ $userStorage = new Storage(new JsonIO('db/users.json'));
 $action = $_GET['action'] ?? 'login'; // Default to 'login'
 $errors = [];
 
+if ($action === 'logout') {
+    session_unset();
+    session_destroy();
+    header('Location: auth.php'); // Redirect to the main page
+    exit;
+}
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'login') {
         // Login Logic
-        $username = $_POST['username'] ?? '';
+        $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
 
-        $user = $userStorage->findOne(['username' => $username]);
+        $user = $userStorage->findOne(['email' => $email]);
         if ($user && password_verify($password, $user['password'])) {
             // Login successful
             session_start();
@@ -27,24 +33,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: index.php'); // Redirect to main page
             exit;
         } else {
-            $errors[] = 'Invalid username or password.';
+            $errors[] = 'Invalid email or password.';
         }
     } elseif ($action === 'register') {
         // Registration Logic
-        $username = $_POST['username'] ?? '';
+        $name = $_POST['name'] ?? '';
+        $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
-        $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        if (empty($username) || empty($password) || empty($confirmPassword)) {
+        if (empty($email) || empty($password) || empty($name)) {
             $errors[] = 'All fields are required.';
-        } elseif ($password !== $confirmPassword) {
-            $errors[] = 'Passwords do not match.';
-        } elseif ($userStorage->findOne(['username' => $username])) {
-            $errors[] = 'Username already exists.';
+        } elseif ($userStorage->findOne(['email' => $email])) {
+            $errors[] = 'Email already exists.';
+        } elseif (strlen($password) < 6) {
+            $errors[] = 'Password too weak, add more characters.';
         } else {
             // Save user
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $userStorage->add(['username' => $username, 'password' => $hashedPassword]);
+            $userStorage->add(['name' => $name, 'email' => $email, 'password' => $hashedPassword, 'authority' => 'user']);
             header('Location: auth.php?action=login'); // Redirect to login page
             exit;
         }
@@ -63,9 +69,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <header>
-        <h1><?= $action === 'login' ? 'Login' : 'Register' ?></h1>
-        <a href="auth.php?action=login">Login</a> | 
+        <h1 >IKarRental - <?= ucfirst($action) ?></h1>
+        <a href="index.php">Home</a>
+        <?php if ($action === 'register'): ?>
+        <a href="auth.php?action=login">Login</a>
+        <?php elseif ($action === 'login'): ?>
         <a href="auth.php?action=register">Register</a>
+        <?php endif; ?>
     </header>
 
     <main>
@@ -78,16 +88,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="POST" action="auth.php?action=<?= htmlspecialchars($action) ?>">
-            <label for="username">Username:</label>
-            <input type="text" name="username" id="username" required>
+            <?php if ($action === 'register'): ?>
+                <label for="name">Full name:</label>
+                <input type="text" name="name" id="name" required>
+            <?php endif; ?>
+            <label for="email">Email:</label>
+            <input type="text" name="email" id="email" required>
 
             <label for="password">Password:</label>
             <input type="password" name="password" id="password" required>
-
-            <?php if ($action === 'register'): ?>
-                <label for="confirm_password">Confirm Password:</label>
-                <input type="password" name="confirm_password" id="confirm_password" required>
-            <?php endif; ?>
 
             <button type="submit"><?= $action === 'login' ? 'Login' : 'Register' ?></button>
         </form>

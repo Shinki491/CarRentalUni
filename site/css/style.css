@@ -141,3 +141,99 @@ form button:hover {
     background: #333;
     color: #fff;
 }
+
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 5px;
+    text-decoration: none;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.btn-update {
+    background-color: #007bff; /* Blue */
+}
+
+.btn-update:hover {
+    background-color: #0056b3;
+}
+
+.btn-delete {
+    background-color: #dc3545; /* Red */
+}
+
+.btn-delete:hover {
+    background-color: #b21f2d;
+}
+
+/* Align submit and admin buttons in a row */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; /* Align items vertically */
+    gap: 10px; /* Space between elements */
+}
+
+form button[type="submit"],
+form button[type="reset"], 
+ .admin-btn {
+    flex-shrink: 0; /* Prevent shrinking of buttons */
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button[type="reset"], 
+form button[type="submit"] {
+    background-color: #333;
+    color: white;
+}
+
+form button[type="reset"]:hover,
+form button[type="submit"]:hover {
+    background-color: #555;
+}
+
+#car-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+.car-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.car-info {
+    flex: 1;
+    max-width: 400px;
+}
+
+.car-info h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.car-info p {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* header a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+header a:hover {
+    text-decoration: underline;
+} */

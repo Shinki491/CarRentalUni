@@ -32,7 +32,8 @@ $user = $_SESSION['user'];
     <main>
         <section id="profile-info">
             <h2>Profile Details</h2>
-            <p><strong>Username:</strong> <?= htmlspecialchars($user['username']) ?></p>
+            <p><strong>Name:</strong> <?= htmlspecialchars($user['name']) ?></p>
+            <p><strong>Email:</strong> <?= htmlspecialchars($user['email']) ?></p>
             <!-- Add more fields as necessary -->
         </section>
     </main>

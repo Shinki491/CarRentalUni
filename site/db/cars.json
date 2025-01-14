@@ -1,13 +1,13 @@
 [
     {
-        "id": 1,
+        "id": "1",
         "brand": "Honda",
         "model": "Civic",
-        "year": 2019,
+        "year": "2019",
         "transmission": "Manual",
         "fuel_type": "Petrol",
-        "passengers": 5,
-        "daily_price_huf": 16250,
+        "passengers": "5",
+        "daily_price_huf": "16250",
         "image": "https:\/\/media.ed.edmunds-media.com\/honda\/civic\/2019\/oem\/2019_honda_civic_sedan_touring_fq_oem_1_815.jpg"
     },
     {
