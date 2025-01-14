@@ -80,12 +80,15 @@ $cars = $carStorage->findCarsByFilter($filters); // Define this method in storag
                 <ul>
                     <?php foreach ($cars as $car): ?>
                         <li>
-                            <img src="<?= htmlspecialchars($car['image']) ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>">
-                            <h3><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h3>
+                            <a href="details.php?id=<?= htmlspecialchars($car['id']) ?>">
+                                <img src="<?= htmlspecialchars($car['image']) ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>">
+                            </a>
+                            <a href="details.php?id=<?= htmlspecialchars($car['id']) ?>">
+                                <h3><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h3>
+                            </a>
                             <p>Passengers: <?= htmlspecialchars($car['passengers']) ?></p>
                             <p>Transmission: <?= htmlspecialchars($car['transmission']) ?></p>
                             <p>Daily Price: <?= htmlspecialchars($car['daily_price_huf']) ?> HUF</p>
-                            <a href="details.php?id=<?= htmlspecialchars($car['id']) ?>">View Details</a>
                         </li>
                     <?php endforeach; ?>
                 </ul>

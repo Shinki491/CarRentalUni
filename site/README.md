@@ -8,10 +8,10 @@ ELTE Academic and Examination Regulations, Faculty of Informatics Special Provis
 
 ### Minimum Requirements (without these, the submission will not be accepted, 6 points) 
 - [ ] 0.0 points README.md file: completed and uploaded 
-- [ ] 1.0 point Homepage: all cars and their basic attributes are listed 
-- [ ] 1.0 point Homepage: clicking on a car’s card/name navigates to the car’s details page 
-- [ ] 1.0 point Car Details Page: displays the car’s attributes and image 
-- [ ] 1.0 point Homepage: filters work for all specified criteria except date ranges 
+- [x] 1.0 point Homepage: all cars and their basic attributes are listed 
+- [x] 1.0 point Homepage: clicking on a car’s card/name navigates to the car’s details page 
+- [x] 1.0 point Car Details Page: displays the car’s attributes and image 
+- [x] 1.0 point Homepage: filters work for all specified criteria except date ranges 
 - [ ] 2.0 points Admin: able to create new cars with error handling, and successfully save them with valid data (no login required) 
 
 ### Core Tasks (14 points) 
