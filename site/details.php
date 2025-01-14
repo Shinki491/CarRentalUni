@@ -3,9 +3,13 @@ session_start();
 require_once 'config.php';
 require_once 'storage.php';
 
-// Initialize the storage
+
 $carStorage = new Storage(new JsonIO('./db/cars.json'));
+$bookingStorage = new Storage(new JsonIO('db/bookings.json'));
+
 $authority = $_SESSION['user']['authority'] ?? '';
+$user = $_SESSION['user'];
+
 $id = $_GET['id'] ?? null;
 $car = $carStorage->findById($id - 1);
 $action = $_GET['action'] ?? '';
@@ -72,19 +76,38 @@ if (isset($_GET['action'])){
     <main>
 
         <?php if ($action === ''): ?>
-        <section id="car-details">
-            <div class="car-image">
-                <img src="<?= htmlspecialchars($car['image']) ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>">
+            <div>
+                <section id="car-details">
+                    <div class="car-image">
+                        <img src="<?= $car['image'] ?>" alt="<?= ($car['brand'] . ' ' . $car['model']) ?>">
+                    </div>
+                    <div class="car-info">
+                        <h2><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h2>
+                        <p><strong>Year:</strong> <?= htmlspecialchars($car['year']) ?></p>
+                        <p><strong>Transmission:</strong> <?= $car['transmission'] ?></p>
+                        <p><strong>Fuel Type:</strong> <?= $car['fuel_type'] ?></p>
+                        <p><strong>Passengers:</strong> <?= $car['passengers'] ?></p>
+                        <p><strong>Daily Price:</strong> <?= $car['daily_price_huf'] ?> HUF</p>
+                    </div>
+                </section>
+
+                <?php if ($authority === 'user'): ?>
+                <div class="form-container">
+                    <form method="GET">
+                        <input type="hidden" name="id" value="<?= $car['id'] ?>">
+                        
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" name="start_date" id="start_date" min="<?= date('Y-m-d') ?>" required>
+
+                        <label for="end_date">End Date:</label>
+                        <input type="date" name="end_date" id="end_date" min="<?= date('Y-m-d') ?>" required>
+                        ~~~~~~~~~~~~~~~~~~~~ADD THE BOOKING TO THE BOOKING DB~~~~~~~~~~~~~~
+                        <button type="submit" id="book_car" name="action" value="book_car">Book</button>
+                    </form>
+                </div>
+                <?php endif; ?>
+
             </div>
-            <div class="car-info">
-                <h2><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h2>
-                <p><strong>Year:</strong> <?= htmlspecialchars($car['year']) ?></p>
-                <p><strong>Transmission:</strong> <?= $car['transmission'] ?></p>
-                <p><strong>Fuel Type:</strong> <?= $car['fuel_type'] ?></p>
-                <p><strong>Passengers:</strong> <?= $car['passengers'] ?></p>
-                <p><strong>Daily Price:</strong> <?= $car['daily_price_huf'] ?> HUF</p>
-            </div>
-        </section>
         <?php if ($authority === 'admin'): ?>
         <a href="details.php?action=update&id=<?= $_GET['id'] ?>" class="btn btn-update">Update</a>
         <?php endif; ?>
