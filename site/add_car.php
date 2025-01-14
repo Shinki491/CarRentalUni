@@ -1,11 +1,11 @@
 <?php
-// index.php
+
 session_start();
-// Include configuration and storage
+
 require_once 'config.php';
 require_once 'storage.php';
 
-// Initialize the storage
+
 $carStorage = new Storage(new JsonIO('./db/cars.json'), true); 
 $authority = $_SESSION['user']['authority'] ?? '';
 $cars = $carStorage->findAll();
@@ -18,6 +18,7 @@ if ($authority !== 'admin'){
 }
 
 if ( $action === 'add'){   
+    $lastID = 0;
     foreach ($cars as $car){
         $lastID = $car['id'];
     }
@@ -81,7 +82,7 @@ if ( $action === 'add'){
         <?php if (!empty($errors)): ?>
             <ul>
                 <?php foreach ($errors as $error): ?>
-                    <li><?= htmlspecialchars($error) ?></li>
+                    <li><?= $error ?></li>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>

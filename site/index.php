@@ -1,16 +1,17 @@
 <?php
-// index.php
+
 session_start();
-// Include configuration and storage
+
 require_once 'config.php';
 require_once 'storage.php';
 
-// Initialize the storage
+
+$bookingStorage = new Storage(new JsonIO('db/bookings.json'));
 $carStorage = new Storage(new JsonIO('./db/cars.json'), true); 
 $authority = $_SESSION['user']['authority'] ?? '';
 $delete = $_GET['action'] ?? '';
 $deleteID = $_GET['id'] ?? '';
-// Fetch filters from GET parameters
+
 $filters = [
     'transmission' => $_GET['transmission'] ?? null,
     'fuel_type' => $_GET['fuel_type'] ?? null,
@@ -21,8 +22,8 @@ $filters = [
     'end_date' => $_GET['end_date'] ?? null,
 ];
 
-// Fetch cars with filters
-$cars = $carStorage->findCarsByFilter($filters); // Define this method in storage.php
+
+$cars = $carStorage->findCarsByFilter($filters, $bookingStorage); 
 
 if ($delete === 'delete' && $authority === 'admin'){
     $carStorage->delete($deleteID - 1);
@@ -104,15 +105,15 @@ if ($delete === 'delete' && $authority === 'admin'){
                 <ul>
                     <?php foreach ($cars as $car): ?>
                         <li>
-                            <a href="details.php?id=<?= htmlspecialchars($car['id']) ?>">
-                                <img src="<?= htmlspecialchars($car['image']) ?>" alt="<?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?>">
+                            <a href="details.php?id=<?= ($car['id']) ?>">
+                                <img src="<?= ($car['image']) ?>" alt="<?= ($car['brand'] . ' ' . $car['model']) ?>">
                             </a>
-                            <a href="details.php?id=<?= htmlspecialchars($car['id']) ?>">
-                                <h3><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h3>
+                            <a href="details.php?id=<?= ($car['id']) ?>">
+                                <h3><?= ($car['brand'] . ' ' . $car['model']) ?></h3>
                             </a>
-                            <p>Passengers: <?= htmlspecialchars($car['passengers']) ?></p>
-                            <p>Transmission: <?= htmlspecialchars($car['transmission']) ?></p>
-                            <p>Daily Price: <?= htmlspecialchars($car['daily_price_huf']) ?> HUF</p>
+                            <p>Passengers: <?= ($car['passengers']) ?></p>
+                            <p>Transmission: <?= ($car['transmission']) ?></p>
+                            <p>Daily Price: <?= ($car['daily_price_huf']) ?> HUF</p>
 
                             <?php if ($authority === 'admin'): ?>
                             <a href="details.php?action=update&id=<?= $car['id'] ?>" class="btn btn-update">Update</a>

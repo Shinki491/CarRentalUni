@@ -1,7 +1,7 @@
 <?php 
 interface IFileIO {
   function save($data);
-  function load($assoc = true); // Optional parameter added
+  function load($assoc = true); 
 }
 abstract class FileIO implements IFileIO {
   protected $filepath;
@@ -128,8 +128,10 @@ class Storage implements IStorage {
     });
   }
 
-  public function findCarsByFilter(array $filters) {
-    return $this->findMany(function ($car) use ($filters) {
+  public function findCarsByFilter(array $filters, $bookingStorage) {
+    $bookings = $bookingStorage->findAll();
+
+    return $this->findMany(function ($car) use ($filters, $bookings) {
         // Transmission filter
         if (isset($filters['transmission']) && $filters['transmission'] !== '') {
             if ($car['transmission'] !== $filters['transmission']) {
@@ -137,6 +139,7 @@ class Storage implements IStorage {
             }
         }
 
+        // Fuel type filter
         if (isset($filters['fuel_type']) && $filters['fuel_type'] !== '') {
             if ($car['fuel_type'] !== $filters['fuel_type']) {
                 return false;
@@ -162,23 +165,29 @@ class Storage implements IStorage {
             }
         }
 
-        // Availability filter
-        if (isset($filters['start_date']) && isset($filters['end_date']) &&
-            $filters['start_date'] !== '' && $filters['end_date'] !== '') {
-            $start_date = strtotime($filters['start_date']);
-            $end_date = strtotime($filters['end_date']);
-            if (isset($car['booked_dates'])) {
-                foreach ($car['booked_dates'] as $range) {
-                    $range_start = strtotime($range['start_date']);
-                    $range_end = strtotime($range['end_date']);
-                    if ($start_date <= $range_end && $end_date >= $range_start) {
-                        return false;
-                    }
-                }
+        // Date and Time Availability Filter
+        if (isset($filters['start_date'], $filters['end_date']) &&
+    $filters['start_date'] !== '' && $filters['end_date'] !== '') {
+
+    $start_date = strtotime($filters['start_date']);
+    $end_date = strtotime($filters['end_date']);
+
+    foreach ($bookings as $booking) {
+        if ($booking['car_id'] == $car['id']) {
+            $booking_start = strtotime($booking['start_date']);
+            $booking_end = strtotime($booking['end_date']);
+
+            // Check if requested date range overlaps with booking date range
+            if ($start_date <= $booking_end && $end_date >= $booking_start) {
+                return false;
             }
         }
+      }
+    }
 
-        return true; // Car matches all filters
+
+    return true; // Car matches all filters
     });
   }
+
 }

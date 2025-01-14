@@ -1,1 +1,23 @@
-[]
+[
+    {
+        "id": 1,
+        "start_date": "2025-01-14",
+        "end_date": "2025-01-15",
+        "email": "amirkhusrav.p491@gmail.com",
+        "car_id": "2"
+    },
+    {
+        "id": 2,
+        "start_date": "2025-01-16",
+        "end_date": "2025-01-22",
+        "email": "amirkhusrav.p491@gmail.com",
+        "car_id": "2"
+    },
+    {
+        "id": 3,
+        "start_date": "2025-01-14",
+        "end_date": "2025-01-15",
+        "email": "amirkhusrav.p491@gmail.com",
+        "car_id": "1"
+    }
+]

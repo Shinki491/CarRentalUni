@@ -7,12 +7,14 @@ require_once 'storage.php';
 $carStorage = new Storage(new JsonIO('./db/cars.json'));
 $bookingStorage = new Storage(new JsonIO('db/bookings.json'));
 
-$authority = $_SESSION['user']['authority'] ?? '';
 $user = $_SESSION['user'];
+$authority = $user['authority'] ?? '';
 
 $id = $_GET['id'] ?? null;
 $car = $carStorage->findById($id - 1);
+$bookings = $bookingStorage->findAll();
 $action = $_GET['action'] ?? '';
+$errors = [];
 
 if (isset($_GET['action'])){
     if ($_GET['action'] === 'update_car' && $authority === 'admin'){
@@ -47,6 +49,55 @@ if (isset($_GET['action'])){
             $goTo = 'Location: details.php?id=' . $id;
             header($goTo);
         }
+    } elseif ($action === 'book_car'){
+        $lastID = 0;
+        foreach ($bookings as $booking){
+            $lastID = $booking['id'];
+        }
+
+        $newBooking = [
+            'id' => $lastID,
+            'start_date' => $_GET['start_date'] ?? '',
+            'end_date' => $_GET['end_date'] ?? '',
+            'email' => $_SESSION['user']['email'] ?? '',
+            'car_id' => $_GET['id'] ?? ''
+        ];
+        echo "i was here";
+        if (empty($newBooking['start_date']) || empty($newBooking['end_date']) || empty($newBooking['email']) || empty($newBooking['car_id'])) {
+            $errors[] = 'Something wrong with the data.';
+        } elseif ($newBooking['start_date'] > $newBooking['end_date']) {
+            $errors[] = 'End date must be after start date.';
+        }
+        
+        foreach ($bookings as $booking) {
+            if ($booking['car_id'] == $newBooking['car_id']) {
+                $existingStart = $booking['start_date'];
+                $existingEnd = $booking['end_date'];
+                $newStart = $newBooking['start_date'];
+                $newEnd = $newBooking['end_date'];
+    
+                if (
+                    ($newStart <= $existingEnd && $newStart >= $existingStart) ||  
+                    ($newEnd <= $existingEnd && $newEnd >= $existingStart) ||    
+                    ($newStart <= $existingStart && $newEnd >= $existingEnd)    
+                ) {
+                    $errors[] = 'This car is already booked for the selected dates.';
+                    break;
+                }
+            }
+        }
+
+        if (empty($errors)) {
+           
+            $bookingStorage->add($newBooking);
+            header('Location: booking.php?status=success&id=' . $_GET['id'] . "&start=" . $_GET['start_date'] . "&end=" . $_GET['end_date']);
+            exit;
+        } else {
+           
+            header('Location: booking.php?status=failure&id=' . $_GET['id'] . "&start=" . $_GET['start_date'] . "&end=" . $_GET['end_date']);
+            exit;
+        }
+        
     }
 }
 
@@ -58,7 +109,7 @@ if (isset($_GET['action'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
-    <title>IKarRental - <?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></title>
+    <title>IKarRental - <?= ($car['brand'] . ' ' . $car['model']) ?></title>
 </head>
 <body>
     <header>
@@ -74,16 +125,22 @@ if (isset($_GET['action'])){
     </header>
 
     <main>
-
         <?php if ($action === ''): ?>
+            <?php if (!empty($errors)): ?>
+                <div class="error-messages">
+                    <?php foreach ($errors as $error): ?>
+                        <p class="error"><?= ($error) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
             <div>
                 <section id="car-details">
                     <div class="car-image">
                         <img src="<?= $car['image'] ?>" alt="<?= ($car['brand'] . ' ' . $car['model']) ?>">
                     </div>
                     <div class="car-info">
-                        <h2><?= htmlspecialchars($car['brand'] . ' ' . $car['model']) ?></h2>
-                        <p><strong>Year:</strong> <?= htmlspecialchars($car['year']) ?></p>
+                        <h2><?= ($car['brand'] . ' ' . $car['model']) ?></h2>
+                        <p><strong>Year:</strong> <?= ($car['year']) ?></p>
                         <p><strong>Transmission:</strong> <?= $car['transmission'] ?></p>
                         <p><strong>Fuel Type:</strong> <?= $car['fuel_type'] ?></p>
                         <p><strong>Passengers:</strong> <?= $car['passengers'] ?></p>
@@ -101,7 +158,7 @@ if (isset($_GET['action'])){
 
                         <label for="end_date">End Date:</label>
                         <input type="date" name="end_date" id="end_date" min="<?= date('Y-m-d') ?>" required>
-                        ~~~~~~~~~~~~~~~~~~~~ADD THE BOOKING TO THE BOOKING DB~~~~~~~~~~~~~~
+                        
                         <button type="submit" id="book_car" name="action" value="book_car">Book</button>
                     </form>
                 </div>

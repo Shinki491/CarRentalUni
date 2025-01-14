@@ -1,42 +1,42 @@
 <?php
-// auth.php
+
 session_start();
 require_once 'config.php';
 require_once 'storage.php';
 
-// Initialize user storage (JSON)
+
 $userStorage = new Storage(new JsonIO('db/users.json'));
 
-// Determine action
-$action = $_GET['action'] ?? 'login'; // Default to 'login'
+
+$action = $_GET['action'] ?? 'login'; 
 $errors = [];
 
 if ($action === 'logout') {
     session_unset();
     session_destroy();
-    header('Location: auth.php'); // Redirect to the main page
+    header('Location: auth.php'); 
     exit;
 }
-// Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'login') {
-        // Login Logic
+   
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
 
         $user = $userStorage->findOne(['email' => $email]);
         if ($user && password_verify($password, $user['password'])) {
-            // Login successful
+          
             session_start();
             echo "session started";
             $_SESSION['user'] = $user;
-            header('Location: index.php'); // Redirect to main page
+            header('Location: index.php');
             exit;
         } else {
             $errors[] = 'Invalid email or password.';
         }
     } elseif ($action === 'register') {
-        // Registration Logic
+       
         $name = $_POST['name'] ?? '';
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
@@ -48,10 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (strlen($password) < 6) {
             $errors[] = 'Password too weak, add more characters.';
         } else {
-            // Save user
+            
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $userStorage->add(['name' => $name, 'email' => $email, 'password' => $hashedPassword, 'authority' => 'user']);
-            header('Location: auth.php?action=login'); // Redirect to login page
+            header('Location: auth.php?action=login'); 
             exit;
         }
     }
@@ -82,12 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if (!empty($errors)): ?>
             <ul>
                 <?php foreach ($errors as $error): ?>
-                    <li style="color: red;"><?= htmlspecialchars($error) ?></li>
+                    <li><?= ($error) ?></li>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>
 
-        <form method="POST" action="auth.php?action=<?= htmlspecialchars($action) ?>">
+        <form method="POST" action="auth.php?action=<?= ($action) ?>">
             <?php if ($action === 'register'): ?>
                 <label for="name">Full name:</label>
                 <input type="text" name="name" id="name" required>
